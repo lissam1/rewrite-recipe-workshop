@@ -21,7 +21,7 @@ import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
-
+//explore
 // This is a test for the SimplifyTernary recipe, as an example of how to write a test for a Refaster style recipe.
 class SimplifyTernaryTest implements RewriteTest {
 

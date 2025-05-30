@@ -22,7 +22,7 @@ import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
 import static org.openrewrite.java.Assertions.java;
-
+//explore
 // This is a test for the NoGuavaListsNewArrayList recipe, as an example of how to write a test for an imperative recipe.
 class NoGuavaListsNewArrayListTest implements RewriteTest {
 
