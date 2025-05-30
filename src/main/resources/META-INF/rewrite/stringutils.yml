@@ -1,0 +1,19 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.yourorg.UseApacheStringUtils
+displayName: Use Apache `StringUtils`
+description: Replace Spring string utilities with Apache string utilities.
+recipeList:
+  - org.openrewrite.java.dependencies.AddDependency:
+      groupId: org.apache.commons
+      artifactId: commons-lang3
+      version: latest.release
+      onlyIfUsing: org.springframework.util.StringUtils
+      configuration: implementation
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: org.springframework.util.StringUtils
+      newFullyQualifiedTypeName: org.apache.commons.lang3.StringUtils
+  - org.openrewrite.java.ChangeMethodName:
+      methodPattern: org.apache.commons.lang3.StringUtils trimWhitespace(java.lang.String)
+      newMethodName: strip
+       
