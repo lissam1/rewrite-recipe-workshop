@@ -21,6 +21,7 @@ import org.openrewrite.java.JavaParser;
 import org.openrewrite.test.RecipeSpec;
 import org.openrewrite.test.RewriteTest;
 
+import static org.openrewrite.java.Assertions.srcTestJava;
 import static org.openrewrite.java.Assertions.java;
 
 class UseApacheStringUtilsTest implements RewriteTest {
@@ -37,7 +38,7 @@ class UseApacheStringUtilsTest implements RewriteTest {
     void replacesStringEquals() {
         rewriteRun(
           //language=java
-          java(
+         srcTestJava( java(
             """
               import org.springframework.util.StringUtils;
 
@@ -57,7 +58,7 @@ class UseApacheStringUtilsTest implements RewriteTest {
               }
               """
           )
-        );
+        ));
     }
 
     @Test
@@ -66,7 +67,7 @@ class UseApacheStringUtilsTest implements RewriteTest {
           // By passing in `commons-lang3` as the classpath here, we ensure that the before code block compiles.
           spec -> spec.parser(JavaParser.fromJavaVersion().classpath("commons-lang3")),
           //language=java
-          java(
+         srcTestJava( java(
             """
               import org.apache.commons.lang3.StringUtils;
 
@@ -78,14 +79,14 @@ class UseApacheStringUtilsTest implements RewriteTest {
               """
             // The absence of a second argument to `java` indicates that the after code block should be the same as the before code block.
           )
-        );
+        ));
     }
 
     @Test
     void  trimWhitespace() {
         rewriteRun(
           //language=java
-          java(
+         srcTestJava( java(
             """
               import org.springframework.util.StringUtils;
               
@@ -105,6 +106,6 @@ class UseApacheStringUtilsTest implements RewriteTest {
               }
               """
           )
-        );
+        ));
     }
 }
