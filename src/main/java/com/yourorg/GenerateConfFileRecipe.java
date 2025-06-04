@@ -13,10 +13,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 @Value
 @EqualsAndHashCode(callSuper = false)
 public class GenerateConfFileRecipe extends ScanningRecipe<GenerateConfFileRecipe.Accumulator> {
+
+    String outputDir = "src/main/resources";
 
     @Override
     public String getDisplayName() {
@@ -29,7 +32,7 @@ public class GenerateConfFileRecipe extends ScanningRecipe<GenerateConfFileRecip
     }
 
     public static class Accumulator {
-        @Nullable String sourceLanguage = null;
+        @Nullable String sourceLanguage;
     }
 
     @Override
@@ -37,23 +40,19 @@ public class GenerateConfFileRecipe extends ScanningRecipe<GenerateConfFileRecip
         return new Accumulator();
     }
 
-    //get the yaml file
     @Override
     public TreeVisitor<?, ExecutionContext> getScanner(Accumulator acc) {
         return new YamlIsoVisitor<ExecutionContext>() {
             @Override
             public Yaml.Document visitDocument(Yaml.Document document, ExecutionContext ctx) {
-                SourceFile sourceFile = getCursor().firstEnclosing(SourceFile.class);
-                if (sourceFile != null) {
-                    Path sourcePath = sourceFile.getSourcePath();
-                    if (sourcePath != null && "micronaut-cli.yml".equals(sourcePath.getFileName().toString())) {
-                        return super.visitDocument(document, ctx);
-                    }
+                SourceFile sourceFile = getCursor().firstEnclosingOrThrow(SourceFile.class);
+                Path sourcePath = sourceFile.getSourcePath();
+                if (sourcePath != null && "micronaut-cli.yml".equals(sourcePath.getFileName().toString())) {
+                    return super.visitDocument(document, ctx);
                 }
                 return document;
             }
 
-            //extract the value from sourceLanguage
             @Override
             public Yaml.Mapping.Entry visitMappingEntry(Yaml.Mapping.Entry entry, ExecutionContext ctx) {
                 if (entry.getKey() instanceof Yaml.Scalar) {
@@ -76,16 +75,16 @@ public class GenerateConfFileRecipe extends ScanningRecipe<GenerateConfFileRecip
             return Collections.emptyList();
         }
 
-        // Generate projectgen.conf with Hello {sourceLanguage value}
         String content = "Hello " + acc.sourceLanguage;
+        Path outputPath = Paths.get(outputDir, "projectgen.conf");
+        Objects.requireNonNull(outputDir, "outputDir must not be null");
 
         PlainText plainText = PlainText.builder()
                 .text(content)
-                .sourcePath(Paths.get("projectgen.conf"))
+                .sourcePath(outputPath)
                 .markers(Markers.EMPTY)
                 .build();
 
         return Collections.singletonList(plainText);
     }
-
 }
